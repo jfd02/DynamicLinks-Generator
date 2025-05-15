@@ -51,7 +51,7 @@ func (h *handler) CreateLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	link, err := h.linkService.CreateDynamicLink(r.Context(), createReq)
+	shortLinkResp, err := h.linkService.CreateDynamicLink(r.Context(), createReq)
 	if errors.Is(err, apperrors.ErrDomainLinkNotAllowed) {
 		WriteErrorResponse(w, http.StatusBadRequest, "'link' parameter contains a host that is not in the allow list", "INVALID_ARGUMENT")
 		return
@@ -65,7 +65,7 @@ func (h *handler) CreateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(link)
+	json.NewEncoder(w).Encode(shortLinkResp)
 }
 
 func (h *handler) ExchangeShortLink(w http.ResponseWriter, r *http.Request) {

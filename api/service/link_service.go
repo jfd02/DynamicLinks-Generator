@@ -62,7 +62,7 @@ func (s *linkService) getLongLinkFromHostAndPath(
 }
 
 func (s *linkService) CreateDynamicLink(ctx context.Context, params models.CreateDynamicLinkRequest) (*models.ShortLinkResponse, error) {
-	var warnings []models.Warning
+	warnings := []models.Warning{}
 
 	log.Debug().
 		Str("params", fmt.Sprintf("%+v", params)).
