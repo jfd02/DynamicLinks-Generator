@@ -115,3 +115,56 @@ func TestParseLongDynamicLink(t *testing.T) {
 		})
 	}
 }
+
+func TestRemovePreviewFromHost(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "prefix preview",
+			input:    "preview.acme.short.link",
+			expected: "acme.short.link",
+		},
+		{
+			name:     "hyphenated preview",
+			input:    "acme-preview.short.link",
+			expected: "acme.short.link",
+		},
+		{
+			name:     "no preview",
+			input:    "acme.short.link",
+			expected: "acme.short.link",
+		},
+		{
+			name:     "prefix preview with nested domain",
+			input:    "preview.staging.acme.short.link",
+			expected: "staging.acme.short.link",
+		},
+		{
+			name:     "hyphenated preview with dot in domain",
+			input:    "myapp-preview.dev.short.link",
+			expected: "myapp.dev.short.link",
+		},
+		{
+			name:     "unrelated prefix",
+			input:    "notpreview.acme.short.link",
+			expected: "notpreview.acme.short.link",
+		},
+		{
+			name:     "unrelated suffix",
+			input:    "acme-somethingelse.short.link",
+			expected: "acme-somethingelse.short.link",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := removePreviewFromHost(tc.input)
+			if got != tc.expected {
+				t.Errorf("expected %q, got %q", tc.expected, got)
+			}
+		})
+	}
+}

@@ -359,13 +359,27 @@ func (s *linkService) ResolveShortPath(ctx context.Context, rawURL string) (*mod
 		return nil, apperrors.ErrInvalidRequestedLink
 	}
 
-	host := u.Host
+	normalizedHost := removePreviewFromHost(u.Host)
+
 	pathParts := strings.Split(strings.Trim(u.Path, "/"), "/")
 	if len(pathParts) != 1 {
 		return nil, fmt.Errorf("unexpected path format: %w", apperrors.ErrInvalidPathFormat)
 	}
 
-	return s.getLongLinkFromHostAndPath(ctx, host, pathParts[0])
+	return s.getLongLinkFromHostAndPath(ctx, normalizedHost, pathParts[0])
+}
+
+func removePreviewFromHost(host string) string {
+	if strings.HasPrefix(host, "preview.") {
+		return strings.TrimPrefix(host, "preview.")
+	}
+	parts := strings.SplitN(host, ".", 2) // ["acme-preview", "short.link"]
+	if len(parts) == 2 && strings.HasSuffix(parts[0], "-preview") {
+		app := strings.TrimSuffix(parts[0], "-preview")
+		return app + "." + parts[1]
+	}
+
+	return host
 }
 
 func (s *linkService) PrepareDynamicLinkRequest(input map[string]any) (models.CreateDynamicLinkRequest, error) {
