@@ -4,6 +4,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	_ "github.com/lib/pq"
 )
 
 type Config struct {
